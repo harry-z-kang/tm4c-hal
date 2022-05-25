@@ -816,3 +816,51 @@ macro_rules! uart_pin_macro {
         )*
     }
 }
+
+///! An internal macro to help define all the different pin typestates
+#[macro_export]
+macro_rules! can_macro {
+  ($(
+      $CANX:ident: ($powerDomain:ident, $canX:ident)
+  )+) => {
+    $(
+      impl<TX, RX> Can<$CANX, TX, RX> {
+        pub fn $canX(
+          mut can: $CANX,
+          tx_pin: TX,
+          rx_pin: RX,
+          baud_rate: Bps,
+          pc: &sysctl::PowerControl
+        ) -> Self
+        where
+            TX: TxPin<$CANX>
+            RX: RxPin<$CANX>
+        {
+          sysctl::control_power(
+            pc, sysctl::Domain::$powerDomain,
+            sysctl::RunMode::Run, sysctl::PowerState::On);
+          sysctl::reset(pc, sysctl::Domain::$powerDomain);
+
+          can.ctl.reset();
+        }
+      }
+    )+
+  }
+}
+
+///! An internal macro to help define all the different pin typestates
+#[macro_export]
+macro_rules! can_pin_macro {
+    ($CANn:ident,
+      rx: [$(($($rxgpio: ident)::*, $rxaf: ident)),*],
+      tx: [$(($($txgpio: ident)::*, $txaf: ident)),*],
+    ) => {
+        $(
+            unsafe impl <T> RxPin<$CANn> for $($rxgpio)::*<AlternateFunction<$rxaf, T>> where T: OutputMode {}
+        )*
+
+        $(
+            unsafe impl <T> TxPin<$CANn> for $($txgpio)::*<AlternateFunction<$txaf, T>> where T: OutputMode {}
+        )*
+    }
+}
