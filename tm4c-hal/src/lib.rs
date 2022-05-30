@@ -5,6 +5,7 @@
 #![allow(deprecated)]
 
 pub mod bb;
+pub mod can;
 pub mod delay;
 pub mod gpio;
 pub mod i2c;
@@ -819,9 +820,9 @@ macro_rules! uart_pin_macro {
 
 ///! An internal macro to help define all the different pin typestates
 #[macro_export]
-macro_rules! can_macro {
+macro_rules! can_hal_macro {
   ($(
-      $CANX:ident: ($powerDomain:ident, $canX:ident)
+      $CANX:ident: ($powerDomain:ident, $canX:ident),
   )+) => {
     $(
       impl<TX, RX> Can<$CANX, TX, RX> {
@@ -833,7 +834,7 @@ macro_rules! can_macro {
           pc: &sysctl::PowerControl
         ) -> Self
         where
-            TX: TxPin<$CANX>
+            TX: TxPin<$CANX>,
             RX: RxPin<$CANX>
         {
           sysctl::control_power(
@@ -856,11 +857,17 @@ macro_rules! can_pin_macro {
       tx: [$(($($txgpio: ident)::*, $txaf: ident)),*],
     ) => {
         $(
-            unsafe impl <T> RxPin<$CANn> for $($rxgpio)::*<AlternateFunction<$rxaf, T>> where T: OutputMode {}
+            unsafe impl <T> RxPin<$CANn> for $($rxgpio)::*<AlternateFunction<$rxaf, T>>
+            where
+                T: OutputMode,
+            {}
         )*
 
         $(
-            unsafe impl <T> TxPin<$CANn> for $($txgpio)::*<AlternateFunction<$txaf, T>> where T: OutputMode {}
+            unsafe impl <T> TxPin<$CANn> for $($txgpio)::*<AlternateFunction<$txaf, T>>
+            where
+                T: OutputMode
+            {}
         )*
     }
 }
