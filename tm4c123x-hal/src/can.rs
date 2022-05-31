@@ -15,17 +15,20 @@ use crate:: {
 };
 use core::marker::PhantomData;
 
+/// Can abstraction
 pub struct Can<CAN, TX, RX> {
     can: CAN,
     tx_pin: TX,
     rx_pin: RX,
 }
 
+/// Can receiver
 pub struct Rx<CAN, RX> {
     _can: PhantomData<CAN>,
     pin: RX,
 }
 
+/// CAN transmitter
 pub struct Tx<CAN, TX> {
     can: CAN,
     pin: TX,
@@ -38,4 +41,4 @@ can_pin_macro!(CAN1, rx: [(gpioa::PA0, AF2)], tx: [(gpioa::PA1, AF2)],);
 can_hal_macro! {
     CAN0: (Can0, can0),
     CAN1: (Can1, can1),
-};
+}
