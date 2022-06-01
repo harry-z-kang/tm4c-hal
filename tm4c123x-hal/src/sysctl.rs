@@ -341,6 +341,22 @@ pub enum Domain {
     Can0,
     /// CAN1
     Can1,
+    /// CAN2
+    Can2,
+    /// CAN3
+    Can3,
+    /// CAN4
+    Can4,
+    /// CAN5
+    Can5,
+    /// CAN6
+    Can6,
+    /// CAN7
+    Can7,
+    /// CAN8
+    Can8,
+    /// CAN9
+    Can9,
 }
 
 /// Reset a peripheral
@@ -532,11 +548,19 @@ pub fn reset(_lock: &PowerControl, pd: Domain) {
             bb::toggle_bit(&p.srpwm, 1);
             bb::spin_bit(&p.prpwm, 1);
         },
-        Domain::Can0 => unsafe {
+        Domain::Can0
+        | Domain::Can1
+        | Domain::Can2
+        | Domain::Can3
+        | Domain::Can4
+        | Domain::Can5
+        | Domain::Can6
+        | Domain::Can7
+        | Domain::Can8 => unsafe {
             bb::toggle_bit(&p.srcan, 0);
             bb::spin_bit(&p.prcan, 0);
         },
-        Domain::Can1 => unsafe {
+        Domain::Can9 => unsafe {
             bb::toggle_bit(&p.srcan, 1);
             bb::spin_bit(&p.prcan, 1);
         },
@@ -617,8 +641,16 @@ fn control_run_power(pd: Domain, on: bool) {
         Domain::WideTimer0 => unsafe { bb::change_bit(&p.rcgcwtimer, 0, on) },
         Domain::Pwm0 => unsafe { bb::change_bit(&p.rcgcpwm, 0, on) },
         Domain::Pwm1 => unsafe { bb::change_bit(&p.rcgcpwm, 1, on) },
-        Domain::Can0 => unsafe { bb::change_bit(&p.rcgccan, 0, on) },
-        Domain::Can1 => unsafe { bb::change_bit(&p.rcgccan, 1, on) },
+        Domain::Can0
+        | Domain::Can1
+        | Domain::Can2
+        | Domain::Can3
+        | Domain::Can4
+        | Domain::Can5
+        | Domain::Can6
+        | Domain::Can7
+        | Domain::Can8 => unsafe { bb::change_bit(&p.rcgccan, 0, on) },
+        Domain::Can9 => unsafe { bb::change_bit(&p.rcgccan, 1, on) },
     }
 }
 
@@ -672,8 +704,16 @@ fn control_sleep_power(pd: Domain, on: bool) {
         Domain::WideTimer0 => unsafe { bb::change_bit(&p.scgcwtimer, 0, on) },
         Domain::Pwm0 => unsafe { bb::change_bit(&p.scgcpwm, 0, on) },
         Domain::Pwm1 => unsafe { bb::change_bit(&p.scgcpwm, 1, on) },
-        Domain::Can0 => unsafe { bb::change_bit(&p.scgccan, 0, on) },
-        Domain::Can1 => unsafe { bb::change_bit(&p.scgccan, 1, on) },
+        Domain::Can0
+        | Domain::Can1
+        | Domain::Can2
+        | Domain::Can3
+        | Domain::Can4
+        | Domain::Can5
+        | Domain::Can6
+        | Domain::Can7
+        | Domain::Can8 => unsafe { bb::change_bit(&p.scgccan, 0, on) },
+        Domain::Can9 => unsafe { bb::change_bit(&p.scgccan, 1, on) },
     }
 }
 
@@ -727,8 +767,16 @@ fn control_deep_sleep_power(pd: Domain, on: bool) {
         Domain::WideTimer0 => unsafe { bb::change_bit(&p.dcgcwtimer, 0, on) },
         Domain::Pwm0 => unsafe { bb::change_bit(&p.dcgcpwm, 0, on) },
         Domain::Pwm1 => unsafe { bb::change_bit(&p.dcgcpwm, 1, on) },
-        Domain::Can0 => unsafe { bb::change_bit(&p.dcgccan, 0, on) },
-        Domain::Can1 => unsafe { bb::change_bit(&p.dcgccan, 1, on) },
+        Domain::Can0
+        | Domain::Can1
+        | Domain::Can2
+        | Domain::Can3
+        | Domain::Can4
+        | Domain::Can5
+        | Domain::Can6
+        | Domain::Can7
+        | Domain::Can8 => unsafe { bb::change_bit(&p.dcgccan, 0, on) },
+        Domain::Can9 => unsafe { bb::change_bit(&p.dcgccan, 1, on) },
     }
 }
 
