@@ -103,7 +103,6 @@ macro_rules! can_hal_macro {
         /// Configures a CAN peripheral to provide can communication
         pub fn $canX(
           mut can: $CANX,
-
           tx_pin: TX,
           rx_pin: RX,
           baud_rate: crate::time::Bps,
@@ -121,13 +120,13 @@ macro_rules! can_hal_macro {
 
           can.ctl.reset();
 
-          can.ctl.write(|w| unsafe { w.init().set_bit().cce().set_bit() });
+          let mut can_obj = Can { can, tx_pin, rx_pin };
 
-          can.bit_.write(|w| unsafe { w.brp().bits(0b111111).sjw().bits(0b11).tseg1().bits(0b1111).tseg2().bits(0b1111) });
+          can_obj.init();
 
-          can.ctl.write(|w| unsafe { w.init().clear_bit() });
+          can_obj.enable();
 
-          Can { can, tx_pin, rx_pin }
+          return can_obj;
         }
 
         /// Initializes the CAN controller after reset.
