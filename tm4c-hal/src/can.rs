@@ -68,6 +68,28 @@ pub enum Error {
     Timeout,
 }
 
+/// Status Register Type
+#[derive(Debug)]
+pub enum StatusReg {
+    /// Read the full CAN controller status
+    StsControl,
+    /// Read the full 32-bit mask of message objects with a transmit request set
+    StsTxRequest,
+    /// Read the full 32-bit mask of message objects with new data available
+    StsNewDat,
+    /// Tead the full 32-bit mask of message objects that are enabled
+    StsMsgVal,
+}
+
+/// Interrupt Status Register Type
+#[derive(Debug)]
+pub enum IntStatusReg {
+    /// Read the CAN interrupt status information
+    IntStsCasue,
+    /// Read a message object's interrupt status
+    IntStsObject,
+}
+
 /// An internal macro to help define all the different pin typestates
 #[macro_export]
 macro_rules! can_pin_macro {
@@ -213,6 +235,15 @@ macro_rules! can_hal_macro {
           }
 
           Err(nb::Error::Other(Error::BitRateCombinationNotFound))
+        }
+
+        /// Return the current CAN controller interrupt status
+        pub fn int_status(&mut self, int_status_reg: IntStatusReg) -> u32 {
+            match (int_status_reg) {
+                IntStatusReg::IntStsCasue => self.can.int.read().bits(),
+                IntStatusReg::IntStsObject => (self.can.msg1int.read().bits() as u16 + ((self.can.msg2int.read().bits() as u16) << 16)) as u32,
+                _ => 0
+            }
         }
 
         /// Splits the `Can` abstraction into a transmitter and a
